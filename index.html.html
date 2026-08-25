@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EPro8 Classroom Leaderboard — v2</title>
+<style>
+:root{--bg:#06101d;--panel:#0d1b2d;--panel2:#122740;--line:#294666;--text:#f5f8fc;--muted:#9fb1c8;--cyan:#4fd1ff;--gold:#ffd166;--silver:#dce5ef;--bronze:#d99a66;--green:#5be39a;--red:#ff6b7a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d4269 0,#06101d 48%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+.wrap{max-width:1450px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center}.logo{font-size:44px}.eyebrow{font-size:12px;letter-spacing:2px;color:var(--cyan);font-weight:900}.title{font-size:clamp(30px,4vw,52px);font-weight:1000;margin:2px 0}.sub{color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.primary{background:var(--cyan);color:#00121a}.ghost{background:#203955;color:white}.green{background:var(--green);color:#052015}.danger{background:#8e2e3f;color:white}.gold{background:var(--gold);color:#241900}
+.tabs{display:flex;gap:7px;margin:18px 0 12px;flex-wrap:wrap}.tabs button{background:#19304b;color:#dcecff}.tabs button.active{background:var(--cyan);color:#00131c}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:18px}.card{background:rgba(13,27,45,.94);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 14px 40px #0005}.card h2{margin:0 0 12px}
+.notice{background:#0b2938;border:1px solid #20556a;color:#d9f6ff;padding:11px;border-radius:10px;font-size:13px;line-height:1.45;margin:10px 0 15px}
+.teamrow{display:grid;grid-template-columns:1fr auto;gap:7px;margin:8px 0}.teamrow input{width:100%;background:#081526;border:1px solid #35516f;color:white;border-radius:9px;padding:10px}
+.teamrow button{background:#713142;color:white}.roomtitle{display:flex;justify-content:space-between;align-items:end;gap:10px}.roomtitle h2{font-size:28px;margin:0}.badge{background:#173650;color:#c9eaff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}
+.scoreboard{display:grid;gap:9px;margin-top:16px}.scoreline{display:grid;grid-template-columns:64px 1fr 115px;align-items:center;gap:12px;background:linear-gradient(90deg,#132943,#0e2036);border:1px solid #27425f;border-left:5px solid transparent;border-radius:15px;padding:13px 16px;transition:.25s}
+.scoreline:hover{transform:translateY(-1px)}.scoreline.r1{border-left-color:var(--gold);box-shadow:0 0 22px #ffd16618}.scoreline.r2{border-left-color:var(--silver)}.scoreline.r3{border-left-color:var(--bronze)}
+.rank{font-size:25px;font-weight:1000}.teamname{font-size:21px;font-weight:950}.points{text-align:right;font-size:34px;font-weight:1000}.small{font-size:12px;color:var(--muted);margin-top:3px}.complete{color:var(--green)!important}
+.controls{margin-top:18px}.controlgrid{display:grid;grid-template-columns:170px repeat(7,minmax(78px,1fr));gap:7px;overflow:auto}.controlgrid>*{min-width:0}.controlhead{font-size:10px;text-align:center;color:var(--muted);font-weight:900;line-height:1.25}.teamcontrol{font-weight:900;padding:10px 4px}.controlgrid button{background:#214363;color:white;padding:10px 5px}.controlgrid button:hover:not(:disabled){background:#2f608a}
+.progress{height:7px;background:#091525;border-radius:99px;overflow:hidden;margin-top:8px}.bar{height:100%;background:linear-gradient(90deg,var(--cyan),#7ee7ff);border-radius:99px}
+.history{max-height:260px;overflow:auto}.event{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #223a54;padding:8px 0;font-size:13px}.event:last-child{border:0}.event b{color:var(--cyan)}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modalbox{max-width:650px;width:100%;background:#0d1b2d;border:1px solid #35516f;border-radius:18px;padding:22px;box-shadow:0 25px 80px #0009}.modalbox h2{margin-top:0}.formgrid{display:grid;gap:9px}.formgrid input{background:#081526;border:1px solid #35516f;color:white;border-radius:9px;padding:11px}.modalactions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px;flex-wrap:wrap}
+.toast{position:fixed;right:18px;bottom:18px;background:#102c3e;border:1px solid #34728b;color:#eaffff;padding:13px 16px;border-radius:12px;font-weight:800;z-index:20;box-shadow:0 10px 30px #0007}
+.displayMode .hideDisplay{display:none!important}.displayMode .wrap{max-width:1550px;padding-top:4vh}.displayMode .layout{display:block}.displayMode .card{background:transparent;border:0;box-shadow:none}.displayMode .scoreline{padding:18px 22px}.displayMode .teamname{font-size:clamp(22px,3vw,42px)}.displayMode .points{font-size:clamp(34px,4vw,60px)}.displayMode .scoreboard{gap:11px}.displayMode .brand{justify-content:center}.displayMode .title{text-align:center}.displayMode .sub{text-align:center}.displayMode .logo{display:none}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.controlgrid{grid-template-columns:160px repeat(7,82px)}}
+@media(max-width:600px){.wrap{padding:12px}.scoreline{grid-template-columns:45px 1fr 80px;padding:11px}.teamname{font-size:17px}.points{font-size:25px}}
+
+<style>
+/* v3 additions */
+.fullOverlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#173e62,#040a12 72%);z-index:50;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px}
+.overlayInner{max-width:900px;width:100%}.overlayKicker{font-size:clamp(14px,2vw,22px);letter-spacing:4px;color:#4fd1ff;font-weight:1000}.overlayTeam{font-size:clamp(48px,10vw,130px);font-weight:1000;margin:15px 0}.overlayMsg{font-size:clamp(20px,4vw,42px);color:#d8e9fa}.overlayPts{font-size:clamp(55px,9vw,110px);font-weight:1000;color:#ffd166}.pulse{animation:pulse .9s ease-in-out 3}@keyframes pulse{50%{transform:scale(1.04);filter:drop-shadow(0 0 30px #4fd1ff)}}
+.finalTable{width:100%;border-collapse:collapse;margin-top:12px}.finalTable th,.finalTable td{padding:12px;border-bottom:1px solid #29425e;text-align:left}.finalTable th{color:#9fb1c8;font-size:12px;text-transform:uppercase}.finalTable td:last-child,.finalTable th:last-child{text-align:right}
+.undoBtn{background:#6d3946;color:#fff;margin-left:8px}.event:hover{background:#132a43;border-radius:7px}.startBadge{display:inline-flex;align-items:center;gap:7px}
+</style>
+</style>
+</head>
+<body>
+<div id="app">
+<div class="wrap">
+<header class="top">
+ <div class="brand"><div class="logo">🏆</div><div><div class="eyebrow">EPro8 • CONCRETE TRUCK</div><div class="title">Classroom Leaderboard</div><div class="sub">Score first • earliest achievement breaks ties</div></div></div>
+ <div class="actions hideDisplay">
+  <select id="room"></select><button class="primary" onclick="toggleDisplay()">📺 Big Screen</button>
+  <button class="ghost" onclick="openSetup()">⚙️ Setup</button><button class="ghost" onclick="exportData()">💾 Backup</button><button class="ghost" onclick="importData()">📥 Restore</button>
+  <button class="gold" onclick="showFinal()">🏁 Final Results</button>
+ </div>
+</header>
+<nav id="tabs" class="tabs hideDisplay"></nav>
+<div class="layout">
+ <aside class="card hideDisplay">
+  <h2>Teams</h2><div class="notice">Use 6–8 teams. Team names and scores save automatically in this browser.</div>
+  <div id="teams"></div><div class="actions" style="margin-top:10px"><button class="primary" onclick="addTeam()">＋ Add team</button><button class="danger" onclick="resetRoom()">Reset room</button></div>
+  <hr style="border:0;border-top:1px solid #29415c;margin:18px 0">
+  <h2>Competition</h2>
+  <div class="notice" id="competitionState">Ready to start.</div>
+  <div class="actions" style="margin-bottom:14px"><button class="green" onclick="startCompetition()">▶ Start</button><button class="ghost" onclick="endCompetition()">■ End</button></div>
+  <h2>Task Points</h2><div id="taskLegend"></div>
+  <div class="small" style="margin-top:14px">Maximum: <b>190 points</b></div>
+ </aside>
+ <main class="card">
+  <div class="roomtitle"><div><h2 id="roomTitle">Room 14</h2><div class="sub" id="roomSub">0 / 190 points possible per team</div></div><div class="badge" id="statusBadge">READY</div></div>
+  <div id="scoreboard" class="scoreboard"></div>
+  <section class="controls hideDisplay">
+   <h2 style="margin-top:22px">🎮 Score Control</h2>
+   <div class="notice">Click a task once when a team completes it. The exact click time is saved automatically. Completed tasks cannot be awarded twice.</div>
+   <div id="controlgrid" class="controlgrid"></div>
+  </section>
+  <section class="card hideDisplay" style="margin-top:18px;padding:14px">
+   <h2>🕘 Recent Activity</h2><div id="history" class="history"></div>
+  </section>
+ </main>
+</div>
+<footer class="small hideDisplay" style="margin-top:12px">Tip: use Big Screen mode for the projector. Press Esc to return. Backups are JSON files containing this room set-up and score history.</footer>
+</div>
+<div id="modal" class="modal" style="display:none"><div class="modalbox"><h2>⚙️ Competition Setup</h2><p class="sub">You can change the competition title and subtitle. This is stored on this computer.</p><div class="formgrid"><input id="competitionTitle" placeholder="Competition title"><input id="competitionSub" placeholder="Subtitle"></div><div class="modalactions"><button class="ghost" onclick="closeSetup()">Cancel</button><button class="primary" onclick="saveSetup()">Save setup</button></div></div></div>
+<div id="toast" class="toast" style="display:none"></div>
+
+<div id="celebrate" class="fullOverlay" style="display:none">
+  <div class="overlayInner pulse">
+    <div class="overlayKicker">🎉 NEW SCORE RECORDED</div>
+    <div id="celebrateTeam" class="overlayTeam"></div>
+    <div id="celebrateMsg" class="overlayMsg"></div>
+    <div id="celebratePts" class="overlayPts"></div>
+  </div>
+</div>
+<div id="finalModal" class="modal" style="display:none">
+ <div class="modalbox">
+  <h2>🏁 Final Results — Room <span id="finalRoom"></span></h2>
+  <p class="sub">Final standings for the Concrete Truck classroom competition.</p>
+  <div id="finalResults"></div>
+  <div class="modalactions"><button class="ghost" onclick="closeFinal()">Close</button><button class="primary" onclick="window.print()">🖨️ Print Results</button></div>
+ </div>
+</div>
+<input id="fileInput" type="file" accept=".json" style="display:none">
+<script>
+const TASKS=[["Cleanliness",5,"🧹"],["Teamwork",5,"🤝"],["Scale Measurements",30,"📏"],["Chassis",40,"🏗️"],["Barrel",40,"🛢️"],["Barrel Volume",30,"🧪"],["Rotating Barrel",40,"🔄"]];
+const ROOMS=["14","15","16","17","18","19","30"], KEY="epro8-leaderboard-v2";
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||null, currentRoom="14";
+if(!state){state={settings:{title:"EPro8 Classroom Leaderboard",sub:"Concrete Truck • score first • earliest achievement breaks ties"},rooms:{}}}
+function freshRoom(){return{teams:Array.from({length:6},(_,i)=>({name:"Team "+(i+1),events:{}}))}}
+for(const r of ROOMS)if(!state.rooms[r])state.rooms[r]=freshRoom();
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function R(){return state.rooms[currentRoom]}
+function total(t){return TASKS.reduce((n,x)=>n+(t.events[x[0]]?x[1]:0),0)}
+function firstTimeForScore(t,target){let es=Object.entries(t.events).map(([task,time])=>({task,time,p:TASKS.find(x=>x[0]===task)[1]})).sort((a,b)=>a.time-b.time),s=0;for(const e of es){s+=e.p;if(s>=target)return e.time}return Infinity}
+function sorted(){return R().teams.map((t,i)=>({t,i,s:total(t)})).sort((a,b)=>b.s-a.s||firstTimeForScore(a.t,a.s)-firstTimeForScore(b.t,b.s)||a.i-b.i)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function fmt(ts){return new Date(ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+
+let competitionStarted={};
+function startCompetition(){
+  if(!competitionStarted[currentRoom]){
+    competitionStarted[currentRoom]=Date.now();
+    localStorage.setItem("epro8-start-"+currentRoom,String(competitionStarted[currentRoom]));
+  }
+  toast("Competition started for Room "+currentRoom+"!");
+  renderCompetitionState();
+}
+function endCompetition(){
+  if(confirm("End the competition for Room "+currentRoom+"? You can still view the results, but this marks the room as finished.")){
+    localStorage.setItem("epro8-end-"+currentRoom,String(Date.now()));
+    renderCompetitionState(); showFinal();
+  }
+}
+function renderCompetitionState(){
+  const s=document.getElementById("competitionState"); if(!s)return;
+  const st=localStorage.getItem("epro8-start-"+currentRoom), en=localStorage.getItem("epro8-end-"+currentRoom);
+  s.innerHTML=en?'<span class="startBadge">🏁 Competition ended</span>':st?'<span class="startBadge">🟢 Competition in progress</span>':'<span class="startBadge">⚪ Ready to start</span>';
+}
+function undoEvent(teamName,task){
+  const t=R().teams.find(x=>x.name===teamName); if(!t||!t.events[task])return;
+  if(confirm("Undo "+task+" for "+teamName+"?")){delete t.events[task];save();render();toast("Score event undone.");}
+}
+function showFinal(){
+  const arr=sorted();document.getElementById("finalRoom").textContent=currentRoom;
+  document.getElementById("finalResults").innerHTML=`<table class="finalTable"><thead><tr><th>Place</th><th>Team</th><th>Points</th><th>Tasks</th></tr></thead><tbody>`+
+    arr.map((x,i)=>`<tr><td>${["🥇","🥈","🥉"][i]||i+1}</td><td><b>${esc(x.t.name)}</b></td><td><b>${x.s}</b></td><td>${Object.keys(x.t.events).length}/7</td></tr>`).join("")+
+    `</tbody></table>`;
+  document.getElementById("finalModal").style.display="flex";
+}
+function closeFinal(){document.getElementById("finalModal").style.display="none"}
+function init(){
+ document.getElementById("room").innerHTML=ROOMS.map(r=>`<option value="${r}">Room ${r}</option>`).join("");
+ document.getElementById("room").value=currentRoom;document.getElementById("room").onchange=e=>{currentRoom=e.target.value;render()};
+ document.getElementById("fileInput").onchange=handleImport;render();
+}
+function render(){
+ document.querySelector(".title").textContent=state.settings.title;
+ document.querySelector(".sub").textContent=state.settings.sub;
+ document.getElementById("tabs").innerHTML=ROOMS.map(r=>`<button class="${r===currentRoom?"active":""}" onclick="switchRoom('${r}')">Room ${r}</button>`).join("");
+ document.getElementById("roomTitle").textContent="Room "+currentRoom;
+ document.getElementById("roomSub").textContent=`${Math.max(...R().teams.map(total))} / 190 points currently achieved`;
+ renderTeams();renderLegend();renderBoard();renderControls();renderHistory();renderCompetitionState();
+}
+function switchRoom(r){currentRoom=r;document.getElementById("room").value=r;render()}
+function renderTeams(){document.getElementById("teams").innerHTML=R().teams.map((t,i)=>`<div class="teamrow"><input value="${esc(t.name)}" onchange="rename(${i},this.value)"><button onclick="removeTeam(${i})">×</button></div>`).join("")}
+function rename(i,v){R().teams[i].name=v.trim()||"Team "+(i+1);save();render()}
+function addTeam(){if(R().teams.length>=8)return toast("Maximum 8 teams.");R().teams.push({name:"Team "+(R().teams.length+1),events:{}});save();render()}
+function removeTeam(i){if(R().teams.length<=6)return toast("Keep at least 6 teams.");if(confirm("Remove "+R().teams[i].name+"?")){R().teams.splice(i,1);save();render()}}
+function renderLegend(){document.getElementById("taskLegend").innerHTML=TASKS.map(x=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1f3852;font-size:13px"><span>${x[2]} ${x[0]}</span><b>+${x[1]}</b></div>`).join("")}
+function renderBoard(){
+ const arr=sorted(),el=document.getElementById("scoreboard");
+ el.innerHTML=arr.map((x,pos)=>{let pct=Math.round(x.s/190*100), medal=["🥇","🥈","🥉"][pos]||pos+1;return `<div class="scoreline ${pos<3?"r"+(pos+1):""}">
+ <div class="rank">${medal}</div><div><div class="teamname">${esc(x.t.name)}</div><div class="small ${x.s===190?"complete":""}">${x.s===190?"✓ ALL TASKS COMPLETE":`${Object.keys(x.t.events).length}/7 tasks • ${pct}%`}</div><div class="progress"><div class="bar" style="width:${pct}%"></div></div></div><div class="points">${x.s}</div></div>`}).join("");
+ let max=arr[0]?.s||0;document.getElementById("statusBadge").textContent=max===190?"🏁 FINISHED":max?"IN PROGRESS":"READY";
+}
+function renderControls(){
+ let h=`<div class="controlhead">TEAM</div>`+TASKS.map(x=>`<div class="controlhead">${x[2]}<br>${x[0]}<br>+${x[1]}</div>`).join("");
+ R().teams.forEach((t,i)=>{h+=`<div class="teamcontrol">${esc(t.name)}</div>`;TASKS.forEach(x=>{let done=!!t.events[x[0]];h+=`<button ${done?"disabled":""} onclick="award(${i},'${x[0].replace(/'/g,"\\'")}')">${done?"✓":"+"+x[1]}</button>`})});
+ document.getElementById("controlgrid").innerHTML=h;
+}
+function award(i,task){
+ let t=R().teams[i];if(t.events[task])return;
+ t.events[task]=Date.now();save();let pts=TASKS.find(x=>x[0]===task)[1];let before=sorted()[0]?.t.name;render();let after=sorted()[0]?.t.name;
+ toast(`${t.name} +${pts} — ${task}`); if(document.body.classList.contains("displayMode")) showCelebration(t.name,task,pts,after!==before);
+}
+function renderHistory(){
+ let events=[];R().teams.forEach((t,i)=>Object.entries(t.events).forEach(([task,time])=>events.push({name:t.name,task,time,p:TASKS.find(x=>x[0]===task)[1]})));
+ events.sort((a,b)=>b.time-a.time);
+ document.getElementById("history").innerHTML=events.length?events.slice(0,30).map(e=>`<div class="event"><span><b>${fmt(e.time)}</b> ${esc(e.name)} — ${e.task}</span><strong>+${e.p}<button class="undoBtn" onclick="undoEvent('${e.name.replace(/'/g,"\\'")}','${e.task.replace(/'/g,"\\'")}')">Undo</button></strong></div>`).join(""):`<div class="small">No scores recorded yet.</div>`;
+}
+function resetRoom(){if(confirm("Reset ALL scores, timestamps and team names for Room "+currentRoom+"?")){state.rooms[currentRoom]=freshRoom();save();render();toast("Room reset.")}}
+function toggleDisplay(){document.body.classList.toggle("displayMode")}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.body.classList.remove("displayMode")});
+
+function showCelebration(team,task,pts,newLeader){
+ const ov=document.getElementById("celebrate"),a=document.getElementById("celebrateTeam"),b=document.getElementById("celebrateMsg"),c=document.getElementById("celebratePts");
+ a.textContent=team;b.textContent=(newLeader?"🚀 MOVES INTO 1ST! ":"")+task;c.textContent="+"+pts;
+ ov.style.display="flex";setTimeout(()=>ov.style.display="none",1900);
+}
+function toast(msg){let el=document.getElementById("toast");el.textContent=msg;el.style.display="block";clearTimeout(window._toast);window._toast=setTimeout(()=>el.style.display="none",2200)}
+function openSetup(){document.getElementById("competitionTitle").value=state.settings.title;document.getElementById("competitionSub").value=state.settings.sub;document.getElementById("modal").style.display="flex"}
+function closeSetup(){document.getElementById("modal").style.display="none"}
+function saveSetup(){state.settings.title=document.getElementById("competitionTitle").value.trim()||"EPro8 Classroom Leaderboard";state.settings.sub=document.getElementById("competitionSub").value.trim()||"Concrete Truck • score first • earliest achievement breaks ties";save();closeSetup();render()}
+function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="EPro8-leaderboard-backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded.")}
+function importData(){document.getElementById("fileInput").click()}
+function handleImport(e){let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=()=>{try{let x=JSON.parse(rd.result);if(!x.rooms||!x.settings)throw 0;state=x;for(const r of ROOMS)if(!state.rooms[r])state.rooms[r]=freshRoom();save();render();toast("Backup restored.")}catch{alert("That file doesn't look like an EPro8 leaderboard backup.")}e.target.value=""};rd.readAsText(f)}
+init();
+</script>
+</body></html>
